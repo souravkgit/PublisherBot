@@ -114,7 +114,6 @@ async def broadcasttag(context, msg_id, chat_id):
 
 async def broadcast(context, msg_, chat_id):
     all_users = await get_all_users()
-    print(all_users)
     users_done = 0
     users_fail = 0
     for el in all_users:

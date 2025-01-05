@@ -1,18 +1,20 @@
 import MainBot.modules.mongo.extra_stuff as extra_stuff
 from telegram import Update
-from MainBot import (
-    application,
-    ADMINS,
-    PUBLISHING_CHATS,
-)
+from MainBot import application, ADMINS, PUBLISHING_CHATS, BOT_USERNAME
 from telegram.ext import ContextTypes
 import html
 from telegram.ext import CommandHandler
 from telegram.constants import ParseMode
 from telegram.helpers import mention_html
 from MainBot.modules.helper_funcs.chat_status import admin_command, owner_command
-from MainBot.modules.helper_funcs.helper import send_message_to_chat, reply_to_message
+from MainBot.modules.helper_funcs.helper import (
+    send_message_to_chat,
+    reply_to_message,
+    build_keyboard,
+)
 import MainBot.modules.mongo.users as users
+from MainBot.modules.helper_funcs.stringHandling import button_markdown_parser
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 @owner_command
@@ -113,16 +115,28 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not reply_to:
         await reply_to_message(
             message,
-            "Please reply to some message to broadcast.",
+            "Please reply to some message to publish, or use /help.",
             context.bot,
             update.effective_chat.id,
         )
         return
     all_chats = list(PUBLISHING_CHATS).copy()
     chats_done, chats_fail = 0, 0
+    argumen = message.reply_to_message.caption
+    offset = 0
+    entities = message.reply_to_message.parse_entities()
+    text, buttons = await button_markdown_parser(
+        argumen, entities=entities, offset=offset
+    )
+    keyb = await build_keyboard(buttons)
     for el in all_chats:
         try:
-            await reply_to.copy(int(el))
+            await reply_to.copy(
+                int(el),
+                reply_markup=InlineKeyboardMarkup(keyb),
+                caption=text,
+                parse_mode=ParseMode.MARKDOWN,
+            )
             chats_done += 1
         except Exception as e:
             print(e)
@@ -200,22 +214,6 @@ async def add_valid_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
             context.bot,
             update.effective_chat.id,
         )
-
-
-def handle_slash(message):
-    if "``" in message:
-        arr = list(message.split("``"))
-        i = 0
-        ret = ""
-        for el in arr:
-            if i % 2 == 0:
-                ret += el
-            else:
-                ret += "`" + el + "`"
-            i += 1
-        return ret
-    else:
-        return message
 
 
 BROADCAST_HANDLER = CommandHandler(["broadcast", "publish"], broadcast, block=False)

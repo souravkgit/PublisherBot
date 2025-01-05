@@ -65,6 +65,27 @@ def start_all_data_load_job():
     )
 
 
+PUBLISH_HELP_TXT = (
+    "This bot helps you publish messages in various chats at once.\n"
+    "You just have to /start the bot and send the message to the bot personally and use /publish commandin reply to message.\n\n"
+    "Buttons are also supported, so you can make your welcomes look awesome with some nice intro "
+    "buttons.\n"
+    f"To create a custome button, use this: `[Button Name](buttonurl://t.me/something)` `[Button Name](buttonurl://t.me/something:same)`."
+    "You can even publish media as well."
+)
+
+
+async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global PUBLISH_HELP_TXT
+    await reply_to_message(
+        update.effective_message,
+        PUBLISH_HELP_TXT,
+        context.bot,
+        update.effective_chat.id,
+        ParseMode.MARKDOWN,
+    )
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     first_name = user.first_name
@@ -133,6 +154,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
 def main() -> None:
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("help", help))
     application.add_error_handler(error_handler)
     start_all_data_load_job()
     application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)

@@ -1,4 +1,5 @@
 from telegram.constants import ParseMode
+from telegram import InlineKeyboardButton
 
 
 async def reply_to_message(message, text, bot, chat_id, pm=ParseMode.MARKDOWN, rm=None):
@@ -23,3 +24,15 @@ async def send_message_to_chat(text, bot, chat_id, pm=ParseMode.MARKDOWN, rm=Non
     except Exception as e:
         print(e)
         pass
+
+
+async def build_keyboard(buttons):
+    keyb = []
+    for name, url, same_line in buttons:
+        name, url
+        if same_line and keyb:
+            keyb[-1].append(InlineKeyboardButton(name, url=url))
+        else:
+            keyb.append([InlineKeyboardButton(name, url=url)])
+
+    return keyb
