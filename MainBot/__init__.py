@@ -20,7 +20,7 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     quit(1)
 
 
-from MainBot.configs import Development as Config
+from MainBot.sample_config import Development as Config
 
 TOKEN = Config.TOKEN
 DB_URI = Config.DB_URI

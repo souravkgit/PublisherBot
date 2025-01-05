@@ -122,7 +122,7 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chats_done, chats_fail = 0, 0
     for el in all_chats:
         try:
-            await message.copy(int(el))
+            await reply_to.copy(int(el))
             chats_done += 1
         except Exception as e:
             print(e)
@@ -218,7 +218,7 @@ def handle_slash(message):
         return message
 
 
-BROADCAST_HANDLER = CommandHandler("broadcast", broadcast, block=False)
+BROADCAST_HANDLER = CommandHandler(["broadcast", "publish"], broadcast, block=False)
 PROMOTE_HANDLER = CommandHandler(["promote", "addadmins"], promote)
 DEMOTE_HANDLER = CommandHandler(["demote", "removeadmins"], demote)
 ADMIN_LIST_HANDLER = CommandHandler(["adminlist", "admins"], admins)
